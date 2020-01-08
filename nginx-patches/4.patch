@@ -1,0 +1,37 @@
+--- a/src/http/modules/ngx_http_scgi_module.c
++++ b/src/http/modules/ngx_http_scgi_module.c
+@@ -1717,30 +1717,32 @@
+                 continue;
+             }
+         }
+ 
+         copy = ngx_array_push_n(params->lengths,
+                                 sizeof(ngx_http_script_copy_code_t));
+         if (copy == NULL) {
+             return NGX_ERROR;
+         }
+ 
+-        copy->code = (ngx_http_script_code_pt) ngx_http_script_copy_len_code;
++        copy->code = (ngx_http_script_code_pt) (void *)
++                                                 ngx_http_script_copy_len_code;
+         copy->len = src[i].key.len + 1;
+ 
+         copy = ngx_array_push_n(params->lengths,
+                                 sizeof(ngx_http_script_copy_code_t));
+         if (copy == NULL) {
+             return NGX_ERROR;
+         }
+ 
+-        copy->code = (ngx_http_script_code_pt) ngx_http_script_copy_len_code;
++        copy->code = (ngx_http_script_code_pt) (void *)
++                                                 ngx_http_script_copy_len_code;
+         copy->len = src[i].skip_empty;
+ 
+ 
+         size = (sizeof(ngx_http_script_copy_code_t)
+                 + src[i].key.len + 1 + sizeof(uintptr_t) - 1)
+                & ~(sizeof(uintptr_t) - 1);
+ 
+         copy = ngx_array_push_n(params->values, size);
+         if (copy == NULL) {
+             return NGX_ERROR;

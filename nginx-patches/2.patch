@@ -1,0 +1,26 @@
+--- a/src/http/modules/ngx_http_grpc_module.c
++++ b/src/http/modules/ngx_http_grpc_module.c
+@@ -4382,21 +4382,22 @@
+         if (src[i].value.len == 0) {
+             continue;
+         }
+ 
+         copy = ngx_array_push_n(headers->lengths,
+                                 sizeof(ngx_http_script_copy_code_t));
+         if (copy == NULL) {
+             return NGX_ERROR;
+         }
+ 
+-        copy->code = (ngx_http_script_code_pt) ngx_http_script_copy_len_code;
++        copy->code = (ngx_http_script_code_pt) (void *)
++                                                 ngx_http_script_copy_len_code;
+         copy->len = src[i].key.len;
+ 
+         size = (sizeof(ngx_http_script_copy_code_t)
+                 + src[i].key.len + sizeof(uintptr_t) - 1)
+                & ~(sizeof(uintptr_t) - 1);
+ 
+         copy = ngx_array_push_n(headers->values, size);
+         if (copy == NULL) {
+             return NGX_ERROR;
+         }

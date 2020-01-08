@@ -1,0 +1,99 @@
+--- a/src/stream/ngx_stream_script.c
++++ b/src/stream/ngx_stream_script.c
+@@ -580,21 +580,22 @@
+     zero = (sc->zero && last);
+     len = value->len + zero;
+ 
+     code = ngx_stream_script_add_code(*sc->lengths,
+                                       sizeof(ngx_stream_script_copy_code_t),
+                                       NULL);
+     if (code == NULL) {
+         return NGX_ERROR;
+     }
+ 
+-    code->code = (ngx_stream_script_code_pt) ngx_stream_script_copy_len_code;
++    code->code = (ngx_stream_script_code_pt) (void *)
++                                               ngx_stream_script_copy_len_code;
+     code->len = len;
+ 
+     size = (sizeof(ngx_stream_script_copy_code_t) + len + sizeof(uintptr_t) - 1)
+             & ~(sizeof(uintptr_t) - 1);
+ 
+     code = ngx_stream_script_add_code(*sc->values, size, &sc->main);
+     if (code == NULL) {
+         return NGX_ERROR;
+     }
+ 
+@@ -670,22 +671,22 @@
+         *p = index;
+     }
+ 
+     code = ngx_stream_script_add_code(*sc->lengths,
+                                       sizeof(ngx_stream_script_var_code_t),
+                                       NULL);
+     if (code == NULL) {
+         return NGX_ERROR;
+     }
+ 
+-    code->code = (ngx_stream_script_code_pt)
+-                      ngx_stream_script_copy_var_len_code;
++    code->code = (ngx_stream_script_code_pt) (void *)
++                                           ngx_stream_script_copy_var_len_code;
+     code->index = (uintptr_t) index;
+ 
+     code = ngx_stream_script_add_code(*sc->values,
+                                       sizeof(ngx_stream_script_var_code_t),
+                                       &sc->main);
+     if (code == NULL) {
+         return NGX_ERROR;
+     }
+ 
+     code->code = ngx_stream_script_copy_var_code;
+@@ -760,22 +761,22 @@
+ {
+     ngx_stream_script_copy_capture_code_t  *code;
+ 
+     code = ngx_stream_script_add_code(*sc->lengths,
+                                   sizeof(ngx_stream_script_copy_capture_code_t),
+                                   NULL);
+     if (code == NULL) {
+         return NGX_ERROR;
+     }
+ 
+-    code->code = (ngx_stream_script_code_pt)
+-                      ngx_stream_script_copy_capture_len_code;
++    code->code = (ngx_stream_script_code_pt) (void *)
++                                       ngx_stream_script_copy_capture_len_code;
+     code->n = 2 * n;
+ 
+ 
+     code = ngx_stream_script_add_code(*sc->values,
+                                   sizeof(ngx_stream_script_copy_capture_code_t),
+                                   &sc->main);
+     if (code == NULL) {
+         return NGX_ERROR;
+     }
+ 
+@@ -852,21 +853,21 @@
+ {
+     ngx_stream_script_full_name_code_t  *code;
+ 
+     code = ngx_stream_script_add_code(*sc->lengths,
+                                     sizeof(ngx_stream_script_full_name_code_t),
+                                     NULL);
+     if (code == NULL) {
+         return NGX_ERROR;
+     }
+ 
+-    code->code = (ngx_stream_script_code_pt)
++    code->code = (ngx_stream_script_code_pt) (void *)
+                                           ngx_stream_script_full_name_len_code;
+     code->conf_prefix = sc->conf_prefix;
+ 
+     code = ngx_stream_script_add_code(*sc->values,
+                         sizeof(ngx_stream_script_full_name_code_t), &sc->main);
+     if (code == NULL) {
+         return NGX_ERROR;
+     }
+ 
+     code->code = ngx_stream_script_full_name_code;
