@@ -4,7 +4,8 @@ set -x
 
 CONTAINER_IP=$(grep "`hostname`" /etc/hosts|awk '{print $1}')
 
-CONTAINER_IP=$(hostname -I)
+## This do not work wel..
+#CONTAINER_IP=$(hostname -I)
 
 CONTIANER_OUTBAND_IP=$( ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')
 
@@ -14,8 +15,10 @@ cp -v /srv/etc/hosts /srv/etc/hosts.current
 safe_pattern=$(printf '%s\n' "${CONTIANER_OUTBAND_IP}" | sed 's/[[\.*^$/]/\\&/g')
 
 sed -i -e "s|^lc-host-proxybind|${safe_pattern}|g" /srv/etc/hosts.current
+
 sed -i -e "s|lc-host-proxybind|${safe_pattern}|g" /usr/local/nginx/vhosts-enabled/*.conf
 #sed -i -e "s|listen lancache-[a-z0-9A-Z -]\+default;|listen ${safe_pattern};|g" /usr/local/nginx/vhosts-enabled/*.conf
+
 sed -i -e "s|listen lancache-[a-z0-9A-Z -]\+default;|listen 80;|g" /usr/local/nginx/vhosts-enabled/*.conf
 
 sed -i -e "s| _;|;\n###SERVERNAME###\n|g" /usr/local/nginx/vhosts-enabled/*.conf
@@ -37,7 +40,7 @@ mkdir /usr/local/nginx/vhosts-avaliable/ && \
 
 safe_pattern=$(printf '%s\n' "${CONTAINER_IP}" | sed 's/[[\.*^$/]/\\&/g')
 
-sed -i -e "s|^lc-host-[a-z0-9A-Z-]\+|${safe_pattern}|g" /srv/etc/hosts.current
+sed -i -e "s|^lc-host-[a-z0-9A-Z\-]\+|${safe_pattern}|g" /srv/etc/hosts.current
 
 cat /etc/hosts.backup /srv/etc/hosts.current > /etc/hosts
 
