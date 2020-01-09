@@ -4,7 +4,7 @@ LABEL maintainer="Eliezer Croitoru <ngtech1ltd@gmail.com>"
 # https://github.com/nginxinc/docker-nginx/blob/master/stable/alpine/Dockerfile
 # peek at: https://raw.githubusercontent.com/bntjah/lc-installer/master/installer.sh
 
-ENV NGINX_VERSION 1.13.4
+ENV NGINX_VERSION 1.16.1
 
 RUN apk add --no-cache \
                 gcc \
@@ -43,14 +43,14 @@ RUN apk add --no-cache \
 
 # Sources download and deployment 
 RUN mkdir -p /build && \
-	wget https://nginx.org/download/nginx-1.13.4.tar.gz -O /build/nginx-1.13.4.tar.gz && \
-	cd /build && tar xf /build/nginx-1.13.4.tar.gz -C /build/ && \
-	cd /build/nginx-1.13.4 && \
+	wget https://nginx.org/download/nginx-1.16.1.tar.gz -O /build/nginx-1.16.1.tar.gz && \
+	cd /build && tar xf /build/nginx-1.16.1.tar.gz -C /build/ && \
+	cd /build/nginx-1.16.1 && \
 	wget http://labs.frickle.com/files/ngx_cache_purge-2.3.tar.gz -O /build/ngx_cache_purge-2.3.tar.gz && \
-	tar xf /build/ngx_cache_purge-2.3.tar.gz -C /build/nginx-1.13.4/ && \
+	tar xf /build/ngx_cache_purge-2.3.tar.gz -C /build/nginx-1.16.1/ && \
 	git clone https://github.com/multiplay/nginx-range-cache/ /build/nginx-range-cache && \
 	wget "https://codeload.github.com/wandenberg/nginx-push-stream-module/tar.gz/0.5.1?dummy=/wandenberg-nginx-push-stream-module-0.5.1_GH0.tar.gz" -O /build/wandenberg-nginx-push-stream-module-0.5.1_GH0.tar.gz && \
-	tar xf /build/wandenberg-nginx-push-stream-module-0.5.1_GH0.tar.gz -C /build/nginx-1.13.4/ && \
+	tar xf /build/wandenberg-nginx-push-stream-module-0.5.1_GH0.tar.gz -C /build/nginx-1.16.1/ && \
 	git clone -b master http://github.com/bntjah/lancache /build/lancache && \
 	git clone https://github.com/dlundquist/sniproxy /build/sniproxy && \
 	wget https://raw.githubusercontent.com/OpenSourceLAN/origin-docker/master/sniproxy/sniproxy.conf -O /build/etc-sniproxy.conf
@@ -62,18 +62,12 @@ COPY nginx-patches /build/nginx-patches
 
 # Software building phase
 ## Nginx
-RUN cd /build/nginx-1.13.4 && \
-	patch -p1 </build/nginx-patches/1.patch && \
-	patch -p1 </build/nginx-patches/3.patch && \
-	patch -p1 </build/nginx-patches/4.patch && \
-	patch -p1 </build/nginx-patches/5.patch && \
-	patch -p1 </build/nginx-patches/6.patch && \
-	patch -p1 </build/nginx-patches/7.patch && \
+RUN cd /build/nginx-1.16.1 && \
 	patch -p1 </build/nginx-range-cache/range_filter.patch && \
 	./configure --modules-path=/usr/local/nginx/modules \
-		--add-module=/build/nginx-1.13.4/ngx_cache_purge-2.3 \
+		--add-module=/build/nginx-1.16.1/ngx_cache_purge-2.3 \
 		--add-module=/build/nginx-range-cache \
-		--add-module=/build/nginx-1.13.4/nginx-push-stream-module-0.5.1 \
+		--add-module=/build/nginx-1.16.1/nginx-push-stream-module-0.5.1 \
 		--with-cc-opt='-I /usr/local/include' \
 		--with-ld-opt='-L /usr/local/lib' \
 		--conf-path=/usr/local/nginx/nginx.conf \
